@@ -167,10 +167,10 @@ def get_data(redis: redis_client.RedisClient, sensor_id: int, db:Session) -> sch
         raise HTTPException(status_code=404, detail="Sensor not found")
     sensorDataDB = redis.get( f"sensor:{sensor_id}:data")
     sensor_data = json.loads(sensorDataDB.decode())
-    print("GETTING THIS?", db_sensor.id)
     print("sensor data?", sensor_data)
     sensor_data['id'] = db_sensor.id
     sensor_data['name'] = db_sensor.name
+    print("get data?", sensor_data)
     return sensor_data
 
 # GET DATA temporal version
