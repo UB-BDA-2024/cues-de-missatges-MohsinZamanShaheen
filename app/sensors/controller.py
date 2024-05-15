@@ -137,7 +137,7 @@ def create_sensor(sensor: schemas.SensorCreate, db: Session = Depends(get_db), m
 # 🙋🏽‍♀️ Add here the route to get a sensor by id
 @router.get("/{sensor_id}")
 def get_sensor(sensor_id: int, db: Session = Depends(get_db), mongodb_client: MongoDBClient = Depends(get_mongodb_client)):
-    db_sensor = repository.get_sensor(db, sensor_id, mongodb_client=mongodb_client)
+    db_sensor = repository.get_sensor(db, sensor_id)
     if db_sensor is None:
         raise HTTPException(status_code=404, detail="Sensor not found")
     
@@ -146,7 +146,7 @@ def get_sensor(sensor_id: int, db: Session = Depends(get_db), mongodb_client: Mo
 # 🙋🏽‍♀️ Add here the route to update a sensor
 @router.post("/{sensor_id}/data")
 def record_data(sensor_id: int, data: schemas.SensorData, db: Session = Depends(get_db),mongodb_client: MongoDBClient = Depends(get_mongodb_client), cassandra: CassandraClient = Depends(get_cassandra_client), redis_client: RedisClient = Depends(get_redis_client), timescale: Timescale = Depends(get_timescale)):
-    db_sensor = repository.get_sensor(db, sensor_id, mongodb_client)
+    db_sensor = repository.get_sensor(db, sensor_id)
     if db_sensor is None:
         raise HTTPException(status_code=404, detail="Sensor not found")
     return repository.record_data(cassandra=cassandra, redis=redis_client, timescale=timescale, sensor_id=sensor_id, data=data)
@@ -154,13 +154,13 @@ def record_data(sensor_id: int, data: schemas.SensorData, db: Session = Depends(
 # 🙋🏽‍♀️ Add here the route to get data from a sensor
 @router.get("/{sensor_id}/data")
 def get_data(sensor_id: int, bucket: str=None, from_date: datetime = Query(None, alias="from"), to_date: datetime = Query(None, alias="to"), db: Session = Depends(get_db), mongodb_client: MongoDBClient = Depends(get_mongodb_client), timescale: Timescale = Depends(get_timescale), redis_client: RedisClient = Depends(get_redis_client)):
-    db_sensor = repository.get_sensor(db, sensor_id, mongodb_client)
+    db_sensor = repository.get_sensor(db, sensor_id)
     if db_sensor is None:
         raise HTTPException(status_code=404, detail="Sensor not found")
     if from_date is not None and to_date and not None and bucket is not None:
           return repository.get_data_timescale(timescale=timescale, sensor_id=sensor_id,from_date=from_date, to_date=to_date, bucket=bucket)
     else:
-        return repository.get_data(redis=redis_client, sensor_id=sensor_id, db=db, mongodb_client=mongodb_client)
+        return repository.get_data(redis=redis_client, sensor_id=sensor_id, db=db)
 
 
 

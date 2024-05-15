@@ -30,7 +30,10 @@ class DataCommand():
 
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
 
-def get_sensor(db: Session, sensor_id: int, mongodb_client: MongoDBClient) -> Optional[models.Sensor]:
+def get_sensor(db: Session, sensor_id: int) -> Optional[models.Sensor]:
+    return db.query(models.Sensor).filter(models.Sensor.id == sensor_id).first()
+
+def get_sensor_specific(db: Session, sensor_id: int, mongodb_client: MongoDBClient) -> Optional[models.Sensor]:
     db_sensor =  db.query(models.Sensor).filter(models.Sensor.id == sensor_id).first()
     if db_sensor is None:
         return None
@@ -158,8 +161,8 @@ def record_data(cassandra: CassandraClient,redis: redis_client, timescale: times
 
 # GET DATA indexos version
 
-def get_data(redis: redis_client.RedisClient, sensor_id: int, db:Session, mongodb_client: MongoDBClient) -> schemas.Sensor:
-    db_sensor = get_sensor(db, sensor_id, mongodb_client)
+def get_data(redis: redis_client.RedisClient, sensor_id: int, db:Session) -> schemas.Sensor:
+    db_sensor = get_sensor(db, sensor_id)
     if db_sensor is None:
         raise HTTPException(status_code=404, detail="Sensor not found")
     sensorDataDB = redis.get( f"sensor:{sensor_id}:data")
@@ -279,7 +282,7 @@ def get_temperature_values(cassandra:CassandraClient, db: Session, mongodb_clien
         sensors = []
         for row in result:
             print("Row",row.sensor_id)
-            db_sensor = get_sensor(db, row.sensor_id, mongodb_client)  
+            db_sensor = get_sensor_specific(db, row.sensor_id, mongodb_client)  
             sensors.append({
                 "id": row.sensor_id,
                 "name": db_sensor['name'],
@@ -336,7 +339,7 @@ def get_low_battery_sensors(cassandra:CassandraClient, db: Session, mongodb_clie
         result = cassandra.execute(query)
         sensors = []
         for row in result:
-            db_sensor = get_sensor(db, row.sensor_id, mongodb_client)
+            db_sensor = get_sensor_specific(db, row.sensor_id, mongodb_client)
             sensors.append({
                 "id": row.sensor_id,
                 "name": db_sensor['name'],
@@ -380,7 +383,7 @@ def get_sensors_near(mongodb_client: MongoDBClient,  db:Session, redis:redis_cli
     sensors = []
     for doc in nearby_sensors:
         doc["_id"] = str(doc["_id"])
-        sensor = get_sensor(db=db, sensor_id=doc["id_sensor"], mongodb_client=mongodb_client).__dict__
+        sensor = get_sensor_specific(db=db, sensor_id=doc["id_sensor"], mongodb_client=mongodb_client).__dict__
         sensor_redis = get_data(redis=redis, sensor_id=doc["id_sensor"], db=db)
         if sensor is not None:
             sensor = {**sensor, **sensor_redis} 
@@ -457,7 +460,7 @@ def search_sensors(db: Session, mongodb_client: MongoDBClient, es: Elasticsearch
     
     formatted_sensors = []
     for sensor in sensors:
-        new_sensor = get_sensor(db, sensor["id_sensor"], mongodb_client)
+        new_sensor = get_sensor_specific(db, sensor["id_sensor"], mongodb_client)
         formatted_sensors.append(new_sensor)
     
     return formatted_sensors
