@@ -89,21 +89,6 @@ def get_sensors_near(latitude: float, longitude: float, radius: int, db: Session
     """
     return repository.get_sensors_near(mongodb_client=mongodb_client, db=db, redis = redis_client,  latitude=latitude, longitude=longitude, radius=radius)
 
-@router.get("/temperature/values")
-def get_temperature_values(db: Session = Depends(get_db), mongodb_client: MongoDBClient = Depends(get_mongodb_client), cassandra_client: CassandraClient = Depends(get_cassandra_client)):
-    return repository.get_temperature_values(db=db, mongodb_client=mongodb_client, cassandra=cassandra_client)
-
-
-@router.get("/quantity_by_type")
-def get_sensors_quantity(db: Session = Depends(get_db), cassandra_client: CassandraClient = Depends(get_cassandra_client)):
-    return repository.get_sensors_quantity(db=db, cassandra=cassandra_client)
-
-
-@router.get("/low_battery")
-def get_low_battery_sensors(db: Session = Depends(get_db), mongodb_client: MongoDBClient = Depends(get_mongodb_client), cassandra_client: CassandraClient = Depends(get_cassandra_client)):
-    return repository.get_low_battery_sensors(db=db, mongodb_client=mongodb_client, cassandra=cassandra_client)
-
-
 #🙋🏽‍♀️ Add here the route to search sensors by query to Elasticsearch
 # Parameters:
 # - query: string to search
@@ -119,6 +104,21 @@ def search_sensors(query: str, size: int = 10, search_type: str = "match", db: S
     if not sensors_list:
         raise HTTPException(status_code=404, detail="There are no sensors that match the specified query")
     return sensors_list
+
+@router.get("/temperature/values")
+def get_temperature_values(db: Session = Depends(get_db), mongodb_client: MongoDBClient = Depends(get_mongodb_client), cassandra_client: CassandraClient = Depends(get_cassandra_client)):
+    return repository.get_temperature_values(db=db, mongodb_client=mongodb_client, cassandra=cassandra_client)
+
+
+@router.get("/quantity_by_type")
+def get_sensors_quantity(db: Session = Depends(get_db), cassandra_client: CassandraClient = Depends(get_cassandra_client)):
+    return repository.get_sensors_quantity(db=db, cassandra=cassandra_client)
+
+
+@router.get("/low_battery")
+def get_low_battery_sensors(db: Session = Depends(get_db), mongodb_client: MongoDBClient = Depends(get_mongodb_client), cassandra_client: CassandraClient = Depends(get_cassandra_client)):
+    return repository.get_low_battery_sensors(db=db, mongodb_client=mongodb_client, cassandra=cassandra_client)
+
 
 # 🙋🏽‍♀️ Add here the route to get all sensors
 @router.get("")
