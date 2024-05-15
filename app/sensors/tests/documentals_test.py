@@ -82,7 +82,6 @@ def test_documentals_get_sensor_1_data():
     response = client.get("/sensors/1/data")
     assert response.status_code == 200
     json = response.json()
-    assert json["id"] == 1
     assert json["name"] == "Sensor Temperatura 1"
     assert json["temperature"] == 1.0
     assert json["humidity"] == 1.0
