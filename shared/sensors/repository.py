@@ -49,7 +49,7 @@ def get_sensor(db: Session, sensor_id: int, mongodb_client: MongoDBClient) -> Op
 
     # Merge the data from the SQL database and MongoDB
     sensor_data = {**db_sensor.to_dict(), **document_sensor_data}
-    #print("Sensor Data", sensor_data )
+    print("Sensor Data in get sensor", sensor_data )
 
     return sensor_data
 
@@ -378,7 +378,7 @@ def get_sensors_near(mongodb_client: MongoDBClient,  db:Session, redis:redis_cli
     sensors = []
     for doc in nearby_sensors:
         doc["_id"] = str(doc["_id"])
-        sensor = get_sensor(db=db, sensor_id=doc["id_sensor"]).__dict__
+        sensor = get_sensor(db=db, sensor_id=doc["id_sensor"], mongodb_client=mongodb_client).__dict__
         sensor_redis = get_data(redis=redis, sensor_id=doc["id_sensor"], db=db)
         if sensor is not None:
             sensor = {**sensor, **sensor_redis} 

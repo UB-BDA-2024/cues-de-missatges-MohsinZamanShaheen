@@ -1,15 +1,14 @@
-import time
 from fastapi.testclient import TestClient
 import pytest
 from app.main import app
-from shared.cassandra_client import CassandraClient
 from shared.redis_client import RedisClient
 from shared.mongodb_client import MongoDBClient
 from shared.elasticsearch_client import ElasticsearchClient
 from shared.timescale import Timescale
+from shared.cassandra_client import CassandraClient
+import time
 
 client = TestClient(app)
-
 
 
 @pytest.fixture(scope="session", autouse=True)
@@ -25,11 +24,13 @@ def clear_dbs():
     mongo.clearDb("sensors")
     mongo.close()
     es = ElasticsearchClient(host="elasticsearch")
-    es.clearIndex("sensors")
+    es.clearIndex("sensors")  
     ts = Timescale()
-    ts.delete("sensor_data")
+    ts.execute("DELETE FROM sensor_data")
+    #TODO execute TS migrations
+    ts.execute("commit")
     ts.close()
-
+     
     while True:
         try:
             cassandra = CassandraClient(["cassandra"])
@@ -39,41 +40,41 @@ def clear_dbs():
         except Exception as e:
             time.sleep(5)
 
-def test_indexos_create_sensor_temperatura():
+def test_create_sensor_temperatura():
     """A sensor can be properly created"""
     response = client.post("/sensors", json={"name": "Sensor Temperatura 1", "latitude": 1.0, "longitude": 1.0, "type": "Temperatura", "mac_address": "00:00:00:00:00:00", "manufacturer": "Dummy", "model":"Dummy Temp", "serie_number": "0000 0000 0000 0000", "firmware_version": "1.0", "description": "Sensor de temperatura model Dummy Temp del fabricant Dummy"})
     assert response.status_code == 200
     assert response.json() == {"id": 1, "name": "Sensor Temperatura 1", "latitude": 1.0, "longitude": 1.0, "type": "Temperatura", "mac_address": "00:00:00:00:00:00", "manufacturer": "Dummy", "model":"Dummy Temp", "serie_number": "0000 0000 0000 0000", "firmware_version": "1.0", "description": "Sensor de temperatura model Dummy Temp del fabricant Dummy"}
      
-def test_indexos_create_sensor_velocitat_1():
+def test_create_sensor_velocitat_1():
     response = client.post("/sensors", json={"name": "Velocitat 1", "latitude": 1.0, "longitude": 1.0, "type": "Velocitat", "mac_address": "00:00:00:00:00:01", "manufacturer": "Dummy", "model":"Dummy Vel", "serie_number": "0000 0000 0000 0000", "firmware_version": "1.0", "description": "Sensor de velocitat model Dummy Vel del fabricant Dummy cruïlla 1"})
     assert response.status_code == 200
     assert response.json() == {"id": 2, "name": "Velocitat 1", "latitude": 1.0, "longitude": 1.0, "type": "Velocitat", "mac_address": "00:00:00:00:00:01", "manufacturer": "Dummy", "model":"Dummy Vel", "serie_number": "0000 0000 0000 0000", "firmware_version": "1.0", "description": "Sensor de velocitat model Dummy Vel del fabricant Dummy cruïlla 1"}
 
-def test_indexos_create_sensor_velocitat_2():
-    response = client.post("/sensors", json={"name": "Velocitat 2", "latitude": 2.0, "longitude": 2.0, "type": "Velocitat", "mac_address": "00:00:00:00:00:02", "manufacturer": "Dummy", "model":"Dummy Vel", "serie_number": "0000 0000 0000 0000", "firmware_version": "1.0", "description": "Sensor de velocitat model Dummy Vel del fabricant Dummy cruïlla 2"})
+def test_create_sensor_velocitat_2():
+    response = client.post("/sensors", json={"name": "Velocitat 2", "latitude": 2.0, "longitude": 2.0, "type": "Velocitat", "mac_address": "00:00:00:00:00:02", "manufacturer": "Dummy", "model":"Dummy Vel", "serie_number": "0000 0000 0000 0002", "firmware_version": "1.0", "description": "Sensor de velocitat model Dummy Vel del fabricant Dummy cruïlla 2"})
     assert response.status_code == 200
-    assert response.json() == {"id": 3, "name": "Velocitat 2", "latitude": 2.0, "longitude": 2.0, "type": "Velocitat", "mac_address": "00:00:00:00:00:02", "manufacturer": "Dummy", "model":"Dummy Vel", "serie_number": "0000 0000 0000 0000", "firmware_version": "1.0", "description": "Sensor de velocitat model Dummy Vel del fabricant Dummy cruïlla 2"}
+    assert response.json() == {"id": 3, "name": "Velocitat 2", "latitude": 2.0, "longitude": 2.0, "type": "Velocitat", "mac_address": "00:00:00:00:00:02", "manufacturer": "Dummy", "model":"Dummy Vel", "serie_number": "0000 0000 0000 0002", "firmware_version": "1.0", "description": "Sensor de velocitat model Dummy Vel del fabricant Dummy cruïlla 2"}
 
-def test_indexos_get_sensor_1():
+def test_get_sensor_1():
     """A sensor can be properly retrieved"""
     response = client.get("/sensors/1")
     assert response.status_code == 200
     assert response.json() == {"id": 1, "name": "Sensor Temperatura 1", "latitude": 1.0, "longitude": 1.0, "type": "Temperatura", "mac_address": "00:00:00:00:00:00", "manufacturer": "Dummy", "model":"Dummy Temp", "serie_number": "0000 0000 0000 0000", "firmware_version": "1.0", "description": "Sensor de temperatura model Dummy Temp del fabricant Dummy"}
 
-def test_indexos_get_sensor_2():
+def test_get_sensor_2():
     """A sensor can be properly retrieved"""
     response = client.get("/sensors/2")
     assert response.status_code == 200
     assert response.json() == {"id": 2, "name": "Velocitat 1", "latitude": 1.0, "longitude": 1.0, "type": "Velocitat", "mac_address": "00:00:00:00:00:01", "manufacturer": "Dummy", "model":"Dummy Vel", "serie_number": "0000 0000 0000 0000", "firmware_version": "1.0", "description": "Sensor de velocitat model Dummy Vel del fabricant Dummy cruïlla 1"}
 
-def test_indexos_get_sensor_3():
+def test_get_sensor_3():
     """A sensor can be properly retrieved"""
     response = client.get("/sensors/3")
     assert response.status_code == 200
-    assert response.json() == {"id": 3, "name": "Velocitat 2", "latitude": 2.0, "longitude": 2.0, "type": "Velocitat", "mac_address": "00:00:00:00:00:02", "manufacturer": "Dummy", "model":"Dummy Vel", "serie_number": "0000 0000 0000 0000", "firmware_version": "1.0", "description": "Sensor de velocitat model Dummy Vel del fabricant Dummy cruïlla 2"}
+    assert response.json() == {"id": 3, "name": "Velocitat 2", "latitude": 2.0, "longitude": 2.0, "type": "Velocitat", "mac_address": "00:00:00:00:00:02", "manufacturer": "Dummy", "model":"Dummy Vel", "serie_number": "0000 0000 0000 0002", "firmware_version": "1.0", "description": "Sensor de velocitat model Dummy Vel del fabricant Dummy cruïlla 2"}
 
-def test_indexos_elasticsearch_client():
+def test_elasticsearch_client():
     """Elasticsearch client can be properly created"""
     es = ElasticsearchClient(host="elasticsearch")
     assert es.ping()
@@ -116,6 +117,7 @@ def test_indexos_elasticsearch_client():
     # Delete the index
     es.clearIndex(es_index_name)
     es.close()
+
 
 def test_indexos_search_sensors_temperatura():
     """Sensors can be properly searched by type"""
