@@ -166,6 +166,7 @@ def get_data(redis: redis_client.RedisClient, sensor_id: int, db:Session, mongod
     sensor_data = json.loads(sensorDataDB.decode())
     sensor_data['id'] = db_sensor.id
     sensor_data['name'] = db_sensor.name
+    print("returned is: ", sensor_data)
     return sensor_data
 
 # GET DATA temporal version
