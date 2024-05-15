@@ -18,19 +18,19 @@ jobs:
       run: docker-compose up -d
 
     - name: Run Clau Valor Test
-      id: clau-valor-test
+      id: key_value_test
       run: docker exec bdda_api sh -c "PYTHONPATH=/app pytest /app/app/sensors/tests/key_value_test.py"
       timeout-minutes: 5
       continue-on-error: true
 
     - name: Run Indexos Test
-      id: indexos-test
+      id: elastic_test
       run: docker exec bdda_api sh -c "PYTHONPATH=/app pytest /app/app/sensors/tests/elastic_test.py"
       timeout-minutes: 5
       continue-on-error: true
 
     - name: Run Dades Documentals Test
-      id: dadesdocumentals-test
+      id: documentals-test
       run: docker exec bdda_api sh -c "PYTHONPATH=/app pytest /app/app/sensors/tests/documentals_test.py"
       timeout-minutes: 5
       continue-on-error: true
@@ -42,7 +42,7 @@ jobs:
       continue-on-error: true
 
     - name: Run Dades Temporals Test
-      id: dadestemporals-test
+      id: temporals-test
       run: docker exec bdda_api sh -c "PYTHONPATH=/app pytest /app/app/sensors/tests/temporals_test.py"
       timeout-minutes: 5
       continue-on-error: true
