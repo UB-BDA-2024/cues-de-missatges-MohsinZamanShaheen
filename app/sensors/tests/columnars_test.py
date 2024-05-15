@@ -15,7 +15,6 @@ client = TestClient(app)
 def clear_dbs():
     from shared.database import SessionLocal, engine
     from shared.sensors import models
-
     models.Base.metadata.drop_all(bind=engine)
     models.Base.metadata.create_all(bind=engine)
     redis = RedisClient(host="redis")
@@ -25,11 +24,13 @@ def clear_dbs():
     mongo.clearDb("sensors")
     mongo.close()
     es = ElasticsearchClient(host="elasticsearch")
-    es.clearIndex("sensors")
+    es.clearIndex("sensors")  
     ts = Timescale()
-    ts.execute("DROP TABLE IF EXISTS sensor_data")
+    ts.execute("DELETE FROM sensor_data")
+    #TODO execute TS migrations
+    ts.execute("commit")
     ts.close()
-
+     
     while True:
         try:
             cassandra = CassandraClient(["cassandra"])

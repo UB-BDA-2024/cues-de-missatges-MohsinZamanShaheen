@@ -1,10 +1,12 @@
 from fastapi.testclient import TestClient
 import pytest
+import time
 from app.main import app
 from shared.redis_client import RedisClient
 from shared.mongodb_client import MongoDBClient
 from shared.elasticsearch_client import ElasticsearchClient
 from shared.timescale import Timescale
+from shared.cassandra_client import CassandraClient
 from yoyo import read_migrations, get_backend
 import os
 
@@ -14,23 +16,32 @@ client = TestClient(app)
 
 @pytest.fixture(scope="session", autouse=True)
 def clear_dbs():
-     from shared.database import SessionLocal, engine
-     from shared.sensors import models
-     models.Base.metadata.drop_all(bind=engine)
-     models.Base.metadata.create_all(bind=engine)
-     redis = RedisClient(host="redis")
-     redis.clearAll()
-     redis.close()
-     mongo = MongoDBClient(host="mongodb")
-     mongo.clearDb("sensors")
-     mongo.close()
-     es = ElasticsearchClient(host="elasticsearch")
-     es.clearIndex("sensors")  
-     ts = Timescale()
-     ts.execute("DELETE FROM sensor_data")
-     #TODO execute TS migrations
-     ts.execute("commit")
-     ts.close()
+    from shared.database import SessionLocal, engine
+    from shared.sensors import models
+    models.Base.metadata.drop_all(bind=engine)
+    models.Base.metadata.create_all(bind=engine)
+    redis = RedisClient(host="redis")
+    redis.clearAll()
+    redis.close()
+    mongo = MongoDBClient(host="mongodb")
+    mongo.clearDb("sensors")
+    mongo.close()
+    es = ElasticsearchClient(host="elasticsearch")
+    es.clearIndex("sensors")  
+    ts = Timescale()
+    ts.execute("DELETE FROM sensor_data")
+    #TODO execute TS migrations
+    ts.execute("commit")
+    ts.close()
+     
+    while True:
+        try:
+            cassandra = CassandraClient(["cassandra"])
+            cassandra.get_session().execute("DROP KEYSPACE IF EXISTS sensor")
+            cassandra.close()
+            break
+        except Exception as e:
+            time.sleep(5)
 
 def test_create_sensor_temperatura():
     """A sensor can be properly created"""
