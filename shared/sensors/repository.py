@@ -163,10 +163,13 @@ def get_data(redis: redis_client.RedisClient, sensor_id: int, db:Session, mongod
     if db_sensor is None:
         raise HTTPException(status_code=404, detail="Sensor not found")
     sensorDataDB = redis.get( f"sensor:{sensor_id}:data")
-    sensor_data = json.loads(sensorDataDB.decode())
-    sensor_data['id__'] = db_sensor.id
-    sensor_data['name'] = db_sensor.name
-    print("returned is: ", sensor_data)
+    sen_data = json.loads(sensorDataDB)
+    
+    sensor_data = {
+        'id': db_sensor.id,
+        'name': db_sensor.name
+    }
+    sensor_data.update(sen_data)
     return sensor_data
 
 # GET DATA temporal version
