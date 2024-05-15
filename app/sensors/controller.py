@@ -160,7 +160,7 @@ def get_data(sensor_id: int, bucket: str=None, from_date: datetime = Query(None,
     if from_date is not None and to_date and not None and bucket is not None:
           return repository.get_data_timescale(timescale=timescale, sensor_id=sensor_id,from_date=from_date, to_date=to_date, bucket=bucket)
     else:
-        return repository.get_data(redis=redis_client, sensor_id=sensor_id, db=db)
+        return repository.get_data(redis=redis_client, sensor_id=sensor_id, db=db, mongodb_client=mongodb_client)
 
 
 

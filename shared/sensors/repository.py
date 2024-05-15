@@ -158,8 +158,8 @@ def record_data(cassandra: CassandraClient,redis: redis_client, timescale: times
 
 # GET DATA indexos version
 
-def get_data(redis: redis_client.RedisClient, sensor_id: int, db:Session) -> schemas.Sensor:
-    db_sensor = get_sensor(db, sensor_id)
+def get_data(redis: redis_client.RedisClient, sensor_id: int, db:Session, mongodb_client: MongoDBClient) -> schemas.Sensor:
+    db_sensor = get_sensor(db, sensor_id, mongodb_client)
     if db_sensor is None:
         raise HTTPException(status_code=404, detail="Sensor not found")
     sensorDataDB = redis.get( f"sensor:{sensor_id}:data")
