@@ -164,7 +164,7 @@ def get_data(redis: redis_client.RedisClient, sensor_id: int, db:Session, mongod
         raise HTTPException(status_code=404, detail="Sensor not found")
     sensorDataDB = redis.get( f"sensor:{sensor_id}:data")
     sensor_data = json.loads(sensorDataDB.decode())
-    sensor_data['id'] = db_sensor.id
+    sensor_data['id__'] = db_sensor.id
     sensor_data['name'] = db_sensor.name
     print("returned is: ", sensor_data)
     return sensor_data
