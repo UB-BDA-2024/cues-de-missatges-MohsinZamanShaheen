@@ -1,6 +1,6 @@
 import datetime
-from sqlalchemy import Column, DateTime, Integer, String
-from shared.database import Base
+from sqlalchemy import Column, DateTime, Float, Integer, String, inspect
+from ..database import Base
 
 class Sensor(Base):
     __tablename__ = "sensors"
@@ -11,3 +11,6 @@ class Sensor(Base):
     #mac_address = Column(String,unique=True, index=True)
     #latitude = Column(Float)
     #longitude = Column(Float)
+    
+    def to_dict(self):
+        return {c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs if c.key != 'joined_at'}
