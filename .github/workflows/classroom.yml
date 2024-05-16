@@ -25,7 +25,7 @@ jobs:
 
       - name: Run Indexos Test
         id: elastic-test
-        uses: classroom-resources/autograding-command-grader@v1
+        uses: education/autograding-grading-reporter@v1
         with:
           test-name: Indexos Test
           setup-command: docker-compose up -d
@@ -35,7 +35,7 @@ jobs:
 
       - name: Run Dades Documentals Test
         id: documentals-test
-        uses: classroom-resources/autograding-command-grader@v1
+        uses: education/autograding-grading-reporter@v1
         with:
           test-name: Dades Documentals Test
           setup-command: docker-compose up -d
@@ -45,7 +45,7 @@ jobs:
 
       - name: Run Columnars Test
         id: columnars-test
-        uses: classroom-resources/autograding-command-grader@v1
+        uses: education/autograding-grading-reporter@v1
         with:
           test-name: Columnars Test
           setup-command: docker-compose up -d
@@ -55,7 +55,7 @@ jobs:
 
       - name: Run Dades Temporals Test
         id: temporals-test
-        uses: classroom-resources/autograding-command-grader@v1
+        uses: education/autograding-grading-reporter@v1
         with:
           test-name: Dades Temporals Test
           setup-command: docker-compose up -d
