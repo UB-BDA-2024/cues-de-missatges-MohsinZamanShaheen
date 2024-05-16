@@ -18,42 +18,62 @@ jobs:
       run: docker-compose up -d
 
     - name: Run Clau Valor Test
-      id: key_value_test
-      run: docker exec bdda_api sh -c "PYTHONPATH=/app pytest /app/app/sensors/tests/key_value_test.py"
-      timeout-minutes: 5
-      continue-on-error: true
+      id: key-value-test
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: Clau Valor Test
+        setup-command: ""
+        command: docker exec bdda_api sh -c "PYTHONPATH=/app pytest /app/app/sensors/tests/key_value_test.py"
+        timeout: 5
+        max-score: 5
 
     - name: Run Indexos Test
-      id: elastic_test
-      run: docker exec bdda_api sh -c "PYTHONPATH=/app pytest /app/app/sensors/tests/elastic_test.py"
-      timeout-minutes: 5
-      continue-on-error: true
+      id: elastic-test
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: Indexos Test
+        setup-command: ""
+        command: docker exec bdda_api sh -c "PYTHONPATH=/app pytest /app/app/sensors/tests/elastic_test.py"
+        timeout: 5
+        max-score: 7
 
     - name: Run Dades Documentals Test
       id: documentals-test
-      run: docker exec bdda_api sh -c "PYTHONPATH=/app pytest /app/app/sensors/tests/documentals_test.py"
-      timeout-minutes: 5
-      continue-on-error: true
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: Dades Documentals Test
+        setup-command: ""
+        command: docker exec bdda_api sh -c "PYTHONPATH=/app pytest /app/app/sensors/tests/documentals_test.py"
+        timeout: 5
+        max-score: 15
 
     - name: Run Columnars Test
       id: columnars-test
-      run: docker exec bdda_api sh -c "PYTHONPATH=/app pytest /app/app/sensors/tests/columnars_test.py"
-      timeout-minutes: 5
-      continue-on-error: true
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: Columnars Test
+        setup-command: ""
+        command: docker exec bdda_api sh -c "PYTHONPATH=/app pytest /app/app/sensors/tests/columnars_test.py"
+        timeout: 5
+        max-score: 13
 
     - name: Run Dades Temporals Test
       id: temporals-test
-      run: docker exec bdda_api sh -c "PYTHONPATH=/app pytest /app/app/sensors/tests/temporals_test.py"
-      timeout-minutes: 5
-      continue-on-error: true
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: Dades Temporals Test
+        setup-command: ""
+        command: docker exec bdda_api sh -c "PYTHONPATH=/app pytest /app/app/sensors/tests/temporals_test.py"
+        timeout: 5
+        max-score: 20
 
     - name: Autograding Reporter
       uses: classroom-resources/autograding-grading-reporter@v1
       env:
         CLAU_VALOR_RESULTS: "${{ steps.key-value-test.outputs.result }}"
-        COLUMNARS_RESULTS: "${{ steps.columnars-test.outputs.result }}"
-        DADES_DOCUMENTALS_RESULTS: "${{ steps.documentals-test.outputs.result }}"
-        DADES_TEMPORALS_RESULTS: "${{ steps.temporals-test.outputs.result }}"
         INDEXOS_RESULTS: "${{ steps.elastic-test.outputs.result }}"
+        DADES_DOCUMENTALS_RESULTS: "${{ steps.documentals-test.outputs.result }}"
+        COLUMNARS_RESULTS: "${{ steps.columnars-test.outputs.result }}"
+        DADES_TEMPORALS_RESULTS: "${{ steps.temporals-test.outputs.result }}"
       with:
-        runners: key-value-test, columnars-test, documentals-test, temporals-test, elastic-test
+        runners: key-value-test, elastic-test, documentals-test, columnars-test, temporals-test
