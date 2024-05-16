@@ -69,4 +69,8 @@ jobs:
           COLUMNARS_RESULTS: "${{ steps.columnars-test.outputs.result }}"
           DADES_TEMPORALS_RESULTS: "${{ steps.temporals-test.outputs.result }}"
         with:
-          runners: '['key-value-test','elastic-test','documentals-test','columnars-test','temporals-test']'
+          runners: key-value-test
+          runners: elastic-test
+          runners: documentals-test
+          runners: columnars-test
+          runners: temporals-test
