@@ -28,7 +28,8 @@ class Timescale:
     def delete(self, table):
         self.cursor.execute("DELETE FROM " + table)
         self.conn.commit()
-
         
-     
-         
+    def refresh_materialized_view(self, view):
+        self.conn.autocommit = True
+        self.execute("CALL refresh_continuous_aggregate('" + view + "', NULL, NULL)")
+        self.conn.autocommit = False
