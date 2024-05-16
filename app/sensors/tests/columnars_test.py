@@ -306,15 +306,43 @@ def test_get_sensors_quantity():
         ]
     }
 
-def test_columnars_get_sensors_low_battery():
+
+def test_get_sensors_low_battery():
     response = client.get("/sensors/low_battery")
     assert response.status_code == 200
-    assert response.json() == {"sensors": [
-        {"id": 2, "name": "Velocitat 1", "latitude": 1.0, "longitude": 1.0, "type": "Velocitat",
-         "mac_address": "00:00:00:00:00:01", "manufacturer": "Dummy", "model": "Dummy Vel",
-         "serie_number": "0000 0000 0000 0000", "firmware_version": "1.0",
-         "description": "Sensor de velocitat model Dummy Vel del fabricant Dummy cruïlla 1", "battery_level": 0.1},
-        {"id": 3, "name": "Velocitat 2", "latitude": 2.0, "longitude": 2.0, "type": "Velocitat",
-         "mac_address": "00:00:00:00:00:02", "manufacturer": "Dummy", "model": "Dummy Vel",
-         "serie_number": "0000 0000 0000 0000", "firmware_version": "1.0",
-         "description": "Sensor de velocitat model Dummy Vel del fabricant Dummy cruïlla 2", "battery_level": 0.15}]}
+    expected=  {
+        "sensors": [
+            {
+                "id": 2,
+                "name": "Velocitat 1",
+                "latitude": 1.0,
+                "longitude": 1.0,
+                "type": "Velocitat",
+                "mac_address": "00:00:00:00:00:01",
+                "manufacturer": "Dummy",
+                "model": "Dummy Vel",
+                "serie_number": "0000 0000 0000 0000",
+                "firmware_version": "1.0",
+                "description": "Sensor de velocitat model Dummy Vel del fabricant Dummy cruïlla 1",
+                "battery_level": 0.1,
+            },
+            {
+                "id": 3,
+                "name": "Velocitat 2",
+                "latitude": 2.0,
+                "longitude": 2.0,
+                "type": "Velocitat",
+                "mac_address": "00:00:00:00:00:02",
+                "manufacturer": "Dummy",
+                "model": "Dummy Vel",
+                "serie_number": "0000 0000 0000 0000",
+                "firmware_version": "1.0",
+                "description": "Sensor de velocitat model Dummy Vel del fabricant Dummy cruïlla 2",
+                "battery_level": 0.15,
+            },
+        ]
+    }
+    
+    actual = response.json()
+    print("Actual response:", actual)
+    print("Expected response:", expected)

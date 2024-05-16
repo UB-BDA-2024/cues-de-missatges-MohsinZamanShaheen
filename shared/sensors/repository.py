@@ -356,7 +356,6 @@ def get_low_battery_sensors(cassandra:CassandraClient, db: Session, mongodb_clie
                 "description": db_sensor['description'],
                 "battery_level": round(row.battery_level, 2)
             })
-        print({"sensors": sensors})
         return {"sensors": sensors}
     except Exception as e:
         print(f"Failed to fetch low battery sensors: {e}")
