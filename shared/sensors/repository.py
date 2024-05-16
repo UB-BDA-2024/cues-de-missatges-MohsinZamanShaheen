@@ -380,8 +380,8 @@ def get_sensors_near(mongodb_client: MongoDBClient,  db:Session, redis:redis_cli
     sensors = []
     for doc in nearby_sensors:
         doc["_id"] = str(doc["_id"])
-        sensor = get_sensor_specific(db=db, sensor_id=doc["id_sensor"], mongodb_client=mongodb_client)
-        print("Near get_sensor_specific: ", sensor)
+        sensor = get_sensor(db=db, sensor_id=doc["id_sensor"]).__dict__
+        print("Near get_sensor: ", sensor)
         sensor_redis = get_data(redis=redis, sensor_id=doc["id_sensor"], db=db)
         print("Near get_data: ", sensor_redis)
         if sensor is not None:
