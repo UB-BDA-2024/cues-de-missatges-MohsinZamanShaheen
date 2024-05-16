@@ -1,5 +1,15 @@
 USE sensor;
 
+CREATE TABLE IF NOT EXISTS sensor.sensor_data_tbl (
+    sensor_id int,
+    timestamp timestamp,
+    temperature float,
+    humidity float,
+    velocity float,
+    battery_level float,
+    PRIMARY KEY (sensor_id, timestamp)
+) WITH CLUSTERING ORDER BY (timestamp DESC);
+
 CREATE TABLE IF NOT EXISTS sensor.temperature_statistics (
     sensor_id int,
     max_temperature float,
