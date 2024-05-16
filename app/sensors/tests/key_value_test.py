@@ -63,8 +63,7 @@ def test_clau_post_sensor_data():
         "last_seen": "2020-01-01T00:00:00.000Z"})
     assert response.status_code == 200
 
-## this test failing because of code restructuring. Commenting it out for now
-"""
+
 def test_clau_get_sensor_data():
     response = client.get("/sensors/1/data")
     assert response.status_code == 200
@@ -75,7 +74,6 @@ def test_clau_get_sensor_data():
     assert json["humidity"] == 1.0
     assert json["battery_level"] == 1.0
     assert json["last_seen"] == "2020-01-01T00:00:00.000Z"
-"""  
 
 def test_clau_post_sensor_data_not_exists():
     response = client.post("/sensors/2/data", json={"temperature": 1.0, "humidity": 1.0, "battery_level": 1.0, "last_seen": "2020-01-01T00:00:00.000Z"})
