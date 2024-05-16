@@ -121,7 +121,7 @@ def test_elasticsearch_client():
    # For some reason the test fail however these use to pass when running only elastic. Commenting out for now 
 """
 
-def test_search_sensors_temperatura():
+def test_search_sensors_temperatura(): 
     response = client.get('/sensors/search?query={"type":"Temperatura"}')
     assert response.status_code == 200
     assert response.json() == [{"id": 1, "name": "Sensor Temperatura 1", "latitude": 1.0, "longitude": 1.0, "type": "Temperatura", "mac_address": "00:00:00:00:00:00", "manufacturer": "Dummy", "model": "Dummy Temp", "serie_number": "0000 0000 0000 0000", "firmware_version": "1.0", "description": "Sensor de temperatura model Dummy Temp del fabricant Dummy"}]
