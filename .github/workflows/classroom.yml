@@ -1,7 +1,7 @@
 name: Autograding Tests
-"on":
-  - push
-  - repository_dispatch
+on:
+  push:
+  repository_dispatch:
 permissions:
   checks: write
   actions: read
@@ -13,8 +13,10 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+
       - name: Set up Docker Environment
         run: docker-compose up -d
+
       - name: Run Clau Valor Test
         id: key-value-test
         uses: education/autograding-command-grader@v1
@@ -24,6 +26,7 @@ jobs:
           command: docker exec bdda_api sh -c "PYTHONPATH=/app pytest /app/app/sensors/tests/key_value_test.py"
           timeout: 5
           max-score: 5
+
       - name: Run Indexos Test
         id: elastic-test
         uses: education/autograding-command-grader@v1
@@ -33,6 +36,7 @@ jobs:
           command: docker exec bdda_api sh -c "PYTHONPATH=/app pytest /app/app/sensors/tests/elastic_test.py"
           timeout: 5
           max-score: 7
+
       - name: Run Dades Documentals Test
         id: documentals-test
         uses: education/autograding-command-grader@v1
@@ -42,6 +46,7 @@ jobs:
           command: docker exec bdda_api sh -c "PYTHONPATH=/app pytest /app/app/sensors/tests/documentals_test.py"
           timeout: 5
           max-score: 15
+
       - name: Run Columnars Test
         id: columnars-test
         uses: education/autograding-command-grader@v1
@@ -51,6 +56,7 @@ jobs:
           command: docker exec bdda_api sh -c "PYTHONPATH=/app pytest /app/app/sensors/tests/columnars_test.py"
           timeout: 5
           max-score: 13
+
       - name: Run Dades Temporals Test
         id: temporals-test
         uses: education/autograding-command-grader@v1
@@ -60,6 +66,7 @@ jobs:
           command: docker exec bdda_api sh -c "PYTHONPATH=/app pytest /app/app/sensors/tests/temporals_test.py"
           timeout: 5
           max-score: 20
+
       - name: Autograding Reporter
         uses: classroom-resources/autograding-grading-reporter@v1
         env:
@@ -69,8 +76,4 @@ jobs:
           COLUMNARS_RESULTS: "${{ steps.columnars-test.outputs.result }}"
           DADES_TEMPORALS_RESULTS: "${{ steps.temporals-test.outputs.result }}"
         with:
-          runners: key-value-test
-          runners: elastic-test
-          runners: documentals-test
-          runners: columnars-test
-          runners: temporals-test
+          runners: "key-value-test,elastic-test,documentals-test,columnars-test,temporals-test"
