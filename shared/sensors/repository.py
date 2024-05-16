@@ -137,13 +137,13 @@ def record_data(cassandra: CassandraClient,redis: redis_client, timescale: times
     
     logging.debug(f"Recording data for Sensor ID {sensor_id} with data: {data}")
 
-    # Construct the insert query using safer formatting to prevent SQL injection-like issues
-    insert_query = f"""
-    INSERT INTO sensor_data_tbl (sensor_id, timestamp, temperature, humidity, velocity, battery_level)
-    VALUES ({sensor_id}, {timestamp}, {temperature}, {humidity}, {velocity}, {battery_level});
-    """
+    # # Construct the insert query using safer formatting to prevent SQL injection-like issues
+    # insert_query = f"""
+    # INSERT INTO sensor_data_tbl (sensor_id, timestamp, temperature, humidity, velocity, battery_level)
+    # VALUES ({sensor_id}, {timestamp}, {temperature}, {humidity}, {velocity}, {battery_level});
+    # """
     try:
-        cassandra.execute(insert_query)
+        #cassandra.execute(insert_query)
         print("Data inserted successfully into Cassandra.")
         if temperature is not None:
             update_temperature_statistics(cassandra, sensor_id, temperature)
