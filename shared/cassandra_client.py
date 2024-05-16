@@ -12,7 +12,7 @@ class CassandraClient:
         create_keyspace_query = """
         CREATE KEYSPACE IF NOT EXISTS sensor WITH replication = {
             'class': 'SimpleStrategy',
-            'replication_factor': '1'
+            'replication_factor': '3'
         };
         """
         self.session.execute(create_keyspace_query)
